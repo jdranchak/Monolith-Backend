@@ -7,6 +7,8 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/home/appuser/app
+      - ./models:/home/appuser/models
+      - ./common:/home/appuser/common
     depends_on:
       - db
       - redis
