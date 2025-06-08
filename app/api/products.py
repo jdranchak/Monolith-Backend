@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from common.db import SessionLocal
-from models.db_models import Product, Inventory, InventoryHistory
-from models.schema import ProductCreate, ProductRead, InventoryRead, InventoryUpdate
+from models.db_models import Product, Inventory, InventoryHistory, Order
+from models.schema import ProductCreate, ProductRead, InventoryRead, InventoryUpdate, OrderRead
 
 router = APIRouter(prefix="/products")
 
@@ -68,6 +68,16 @@ def get_product(id: int, db: Session = Depends(get_db)):
     if not product:
         raise HTTPException(404, "Product not found")
     return product
+
+@router.get("/{id}/orders", response_model=list[OrderRead])
+def get_product_orders(id: int, db: Session = Depends(get_db)):
+    """Get all orders for a specific product"""
+    product = db.query(Product).get(id)
+    if not product:
+        raise HTTPException(404, "Product not found")
+    
+    orders = db.query(Order).filter(Order.product_id == id).all()
+    return orders
 
 @router.get("/{id}/inventory", response_model=InventoryRead)
 def get_product_inventory(id: int, db: Session = Depends(get_db)):
